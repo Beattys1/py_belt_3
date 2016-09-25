@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HomePage</title>
+  </head>
+  <body>
+    <h1>Welcome {{user.alias}}</h1>
+    <a href="/logout">Logout</a>
+    <fieldset>
+      <legend>Quotable Quotes</legend>
+      {% for others in others %}
+      <div style="border: solid black 1px;">
+        <p>{{others.person}}:{{others.quote}}</p>
+        <p>posted by <a href="user/{{others.creator.id}}">{{others.creator.alias}}</a></p>
+        <form action="/favorite_quote/{{others.id}}" method="POST">{% csrf_token %}<button type="submit">Add Favorite</button></form>
+      </div>
+      {% endfor %}
+    </fieldset>
+    <fieldset>
+      <legend>Your favorites</legend>
+      {% for favorites in favorites %}
+      <div style="border: solid black 1px;">
+        <p>{{favorites.quote_like.person}}:{{favorites.quote_like.quote}}</p>
+        <p>posted by <a href="user/{{favorites.quote_like.creator.id}}">{{favorites.quote_like.creator.alias}}</a></p>
+        <form action="/remove_quote/{{favorites.quote_like.id}}" method="POST">{% csrf_token %}<button type="submit">Remove Favorite</button></form>
+      </div>
+      {% endfor %}
+    </fieldset>
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    <h3>Add a quote:</h3>
+    <form action="/add_quote/{{user.id}}" method="post">
+      {% csrf_token %}
+      <p>Quoted by: <input type="text" name="person"></p>
+      <p>Quote: </p><textarea name="quote" rows="8" cols="40"></textarea>
+      <button type="submit" >Add it!</button>
+    </form>
+  </body>
+</html>
